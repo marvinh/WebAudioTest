@@ -7,20 +7,6 @@ osc = new Sine();
 aenv = new DecayEnv();
 penv = new PitchEnv();
 
-window.addEventListener('touchstart', function() {
-
-	// create empty buffer
-	var buffer = myContext.createBuffer(1, 1, 22050);
-	var source = myContext.createBufferSource();
-	source.buffer = buffer;
-
-	// connect to output (your speakers)
-	source.connect(myContext.destination);
-
-	// play the file
-	source.noteOn(0);
-
-}, false);
 
 
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -40,6 +26,7 @@ penv.setCurve(.0);
 var start = 10000.0/audioContext.sampleRate;
 var end = 60.0/audioContext.sampleRate;
 
+source.noteOn(0);
 
 // Give the node a function to process audio events
 scriptNode.onaudioprocess = function(audioProcessingEvent) {

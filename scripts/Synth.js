@@ -12,8 +12,8 @@ penv = new PitchEnv();
 var audioContext = new AudioContext();
 source = audioContext.createBufferSource();
 var scriptNode = audioContext.createScriptProcessor(4096, 0, 1);
-var kickButton = document.getElementById("kickButton");
-var initButton = document.getElementById("init");
+var kickButton = document.getElementById('kickButton');
+var initButton = document.getElementById('initButton');
 osc.inc = 60.0/audioContext.sampleRate;
 aenv.sampleRate = audioContext.sampleRate;
 penv.sampleRate = audioContext.sampleRate;
@@ -25,8 +25,6 @@ penv.setCurve(.0);
 
 var start = 10000.0/audioContext.sampleRate;
 var end = 60.0/audioContext.sampleRate;
-
-source.noteOn(0);
 
 // Give the node a function to process audio events
 scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -70,6 +68,7 @@ scriptNode.onaudioprocess = function(audioProcessingEvent) {
 }
 
 initButton.onclick = function() {
+  console.log('init button fired');
   source.connect(scriptNode);
   scriptNode.connect(audioContext.destination);
   source.start();

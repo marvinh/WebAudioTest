@@ -9,11 +9,11 @@ penv = new PitchEnv();
 
 
 
-var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+var audioContext = new AudioContext();
 source = audioContext.createBufferSource();
 var scriptNode = audioContext.createScriptProcessor(4096, 0, 1);
-var kickButton = document.getElementById('kickButton');
-
+var kickButton = document.getElementById("kickButton");
+var initButton = document.getElementById("init");
 osc.inc = 60.0/audioContext.sampleRate;
 aenv.sampleRate = audioContext.sampleRate;
 penv.sampleRate = audioContext.sampleRate;
@@ -69,10 +69,12 @@ scriptNode.onaudioprocess = function(audioProcessingEvent) {
   }
 }
 
-source.connect(scriptNode);
-scriptNode.connect(audioContext.destination);
-source.start();
-
+initButton.onclick = function() {
+  source.connect(scriptNode);
+  scriptNode.connect(audioContext.destination);
+  source.start();
+  source.noteOn(0);
+}
 
 // When the buffer source stops playing, disconnect everything
 source.onended = function() {

@@ -9,7 +9,7 @@ penv = new PitchEnv();
 
 
 
-var audioContext = new webkitAudioContext();
+var audioContext = new AudioContext();
 source = audioContext.createBufferSource();
 var scriptNode = audioContext.createScriptProcessor(4096, 0, 1);
 var kickButton = document.getElementById('kickButton');

@@ -73,7 +73,6 @@ initButton.onclick = function() {
   source.connect(scriptNode);
   scriptNode.connect(audioContext.destination);
   source.start();
-  source.noteOn(0);
 }
 
 // When the buffer source stops playing, disconnect everything

@@ -111,7 +111,6 @@ PitchEnv.prototype.process = function () {
 
 
 PitchEnv.prototype.processPitch = function (f0,f1) {
-  //f0*f1*t1 / ((f0 - f1)*t + f1*t1)
   return f0 * f1 / ((f0 - f1)*this.process() + f1);
 };
 

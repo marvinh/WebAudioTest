@@ -9,28 +9,42 @@ penv = new PitchEnv();
 
 
 
-var audioContext = new AudioContext();
+var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+window.addEventListener('touchstart', function() {
+
+	// create empty buffer
+	var buffer = audioContext.createBuffer(1, 1, 22050);
+	var src = audioContext.createBufferSource();
+	src.buffer = buffer;
+
+	// connect to output (your speakers)
+	src.connect(audioContext.destination);
+
+	// play the file
+	src.start();
+
+}, false);
+
 source = audioContext.createBufferSource();
 var scriptNode = audioContext.createScriptProcessor(4096, 0, 1);
 var kickButton = document.getElementById('kickButton');
-var initButton = document.getElementById('initButton');
-initButton.addEventListener('touchstart', process_touchstart, false);
-osc.inc = 60.0/audioContext.sampleRate;
-aenv.sampleRate = audioContext.sampleRate;
-penv.sampleRate = audioContext.sampleRate;
+
+var sampleRate = audioContext.sampleRate;
+osc.inc = 60.0 / sampleRate;
+aenv.sampleRate = sampleRate;
+penv.sampleRate = sampleRate;
 
 aenv.setDecayRate(.5);
-
+aenv.stage = 0;
 penv.setRate(.25);
-penv.setCurve(.0);
+penv.setCurve(1);
 
-var start = 10000.0/audioContext.sampleRate;
-var end = 60.0/audioContext.sampleRate;
+var start = 10000.0 / sampleRate;
+var end = 60.0 / sampleRate;
 
 // Give the node a function to process audio events
 scriptNode.onaudioprocess = function(audioProcessingEvent) {
-  // The input buffer is the song we loaded earlier
-  //var inputBuffer = audioProcessingEvent.inputBuffer;
   // The output buffer contains the samples that will be modified and played
   var outputBuffer = audioProcessingEvent.outputBuffer;
 
@@ -43,9 +57,6 @@ scriptNode.onaudioprocess = function(audioProcessingEvent) {
         // Loop through the 4096 samples
         for (var sample = 0; sample < outputBuffer.length; sample++)
         {
-          // make output equal to the same as the input
-          //outputData[sample] = inputData[sample];
-          // add noise to each output sample
           outputData[sample] = osc.process() * aenv.process();
           osc.inc = penv.processPitch(start,end);
         }
@@ -59,34 +70,19 @@ scriptNode.onaudioprocess = function(audioProcessingEvent) {
         // Loop through the 4096 samples
         for (var sample = 0; sample < outputBuffer.length; sample++)
         {
-          // make output equal to the same as the input
-          //outputData[sample] = inputData[sample];
-          // add noise to each output sample
           outputData[sample] = 0.0;
         }
     }
   }
 }
-function process_touchstart(ev) {
-  // Use the event's data to call out to the appropriate gesture handlers
-  switch (ev.touches.length) {
-    case 1: handle_one_touch(ev);
-      console.log('init button fired');
-      source.connect(scriptNode);
-      scriptNode.connect(audioContext.destination);
-      source.start();
-      break;
-    case 2: handle_two_touches(ev); break;
-    case 3: handle_three_touches(ev); break;
-    default: gesture_not_supported(ev); break;
-  }
-}
-initButton.onclick = function() {
-  console.log('init button fired');
-  source.connect(scriptNode);
-  scriptNode.connect(audioContext.destination);
-  source.start();
-}
+
+
+
+
+source.connect(scriptNode);
+scriptNode.connect(audioContext.destination);
+source.start();
+
 
 // When the buffer source stops playing, disconnect everything
 source.onended = function() {
